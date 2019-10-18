@@ -43,6 +43,12 @@ class Truss:
         E = float(E)
         A = float(A)
         I = float(I)
+        u1 = int(u1)
+        u2 = int(u2)
+        u3 = int(u3)
+        u4 = int(u4)
+        u5 = int(u5)
+        u6 = int(u6)
 
         self.start = start
         self.end = end
@@ -138,12 +144,15 @@ def main():
             if u != 0:
                 j = 0
                 for u2 in truss.degrees:
-                    if u != 0:
+                    if u2 != 0:
                         Keff[int(u)-1][int(u2)-1] += truss.matrix[i][j]
-                j += 1
-        i += 1
+                        print(i,j, truss.matrix[i][j], u, u2)
+                    j += 1
+            i += 1
     print(Keff)
-
+    k = np.linalg.inv(Keff)
+    displ = np.dot(k, force)
+    print(f"displacements: \n{displ}") 
 
 
 if __name__ == "__main__":
