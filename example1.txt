@@ -1,3 +1,3 @@
- start coordinate, end coordinate, E, A
-(0, 0), (3, 0), 200e6, 12e-4
-(3, 0), (0, 4), 200e6, 12e-4
+ start coordinate, end coordinate, E, A, I, u1, u2, u3, u4, u5, u6
+(0, 0), (3, 0), 200e6, 12e-4, 1e10, 1e10, 1e10, 1e10, 1e10, 1e10, 1e10
+(3, 0), (0, 4), 200e6, 12e-4, 1e10, 1e10, 1e10, 1e10, 1e10, 1e10, 1e10
