@@ -26,35 +26,36 @@ class Truss:
             r", "
             r"(\d+e-?\d+)"
             r", "
-            r"(\d+e-?\d+)"
+            r"(\d+)"
             r", "
-            r"(\d+e-?\d+)"
+            r"(\d+)"
             r", "
-            r"(\d+e-?\d+)"
+            r"(\d+)"
             r", "
-            r"(\d+e-?\d+)"
+            r"(\d+)"
             r", "
-            r"(\d+e-?\d+)"
+            r"(\d+)"
             r", "
-            r"(\d+e-?\d+)", line)
+            r"(\d+)", line)
         start1, start2, end1, end2, E, A, I, u1, u2, u3, u4, u5, u6 = match.groups()
         start = (float(start1), float(start2))
         end = (float(end1), float(end2))
         E = float(E)
         A = float(A)
-        I = float(I) * 0
+        I = float(I)
 
         self.start = start
         self.end = end
         self.E = E
         self.A = A
         self.I = I
-        self.u1 = u1
-        self.u2 = u2
-        self.u3 = u3
-        self.u4 = u4
-        self.u5 = u5
-        self.u6 = u6
+        self.degrees = [u1, u2, u3, u4, u5, u6]
+#        self.u1 = u1
+#        self.u2 = u2
+#        self.u3 = u3
+#        self.u4 = u4
+#        self.u5 = u5
+#        self.u6 = u6
         self.length = self.get_length()
         self.c = self.get_c()
         self.s = self.get_s()
@@ -112,17 +113,38 @@ class Truss:
         return f"\nstart:{self.start}, end:{self.end} matrix:\n{self.matrix}" 
 
 #for node in nodes:
+def main():
+    trusses = []
+    with open("example1.txt") as f:
+        for line in f:
+            line = line.rstrip()
+            if re.search(r"^ ", line):
+                pass
+            elif re.search(r"^Force", line):
+                x = re.split(r"\s", line)
+                us = len(x) - 1
+                force =  np.zeros( (len(x)-1,1) )
+                for i in range(len(x)-1):
+                    force[i][0] += int(x[i+1])
+                print(x, force)
+            else:
+                trusses.append(Truss(line))
+    print(trusses)
 
-trusses = []
-with open("example1.txt") as f:
-    for line in f:
-        line = line.rstrip()
-        if re.search(r"^ ", line):
-            pass
-        else:
-            trusses.append(Truss(line))
+    Keff = np.zeros( (us,us) )
+    for truss in trusses:
+        i = 0
+        for u in truss.degrees:
+            if u != 0:
+                j = 0
+                for u2 in truss.degrees:
+                    if u != 0:
+                        Keff[int(u)-1][int(u2)-1] += truss.matrix[i][j]
+                j += 1
+        i += 1
+    print(Keff)
 
 
 
-print(trusses)
-#print(matrise2)
+if __name__ == "__main__":
+    main()
