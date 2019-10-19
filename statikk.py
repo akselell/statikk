@@ -2,19 +2,12 @@ import math
 import re
 import numpy as np
 
-#matrisen = np.linalg.inv([[1, 3, 3],
-#                          [1, 4, 3],
-#                          [1, 3, 4]])
-#
-#matrise2 = np.linalg.inv([[97280, -23040], [-23040, 30720]])
-
 class Truss:
     """
     A truss can take loads
     """
     def __init__(self, line):
         print(repr(line))
-        #match = re.match(r"\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)", line)
         match = re.match(
             r"\((\d+), (\d+)\)"
             r", "
@@ -56,12 +49,6 @@ class Truss:
         self.A = A
         self.I = I
         self.degrees = [u1, u2, u3, u4, u5, u6]
-#        self.u1 = u1
-#        self.u2 = u2
-#        self.u3 = u3
-#        self.u4 = u4
-#        self.u5 = u5
-#        self.u6 = u6
         self.length = self.get_length()
         self.c = self.get_c()
         self.s = self.get_s()
@@ -87,15 +74,6 @@ class Truss:
         y2 = self.end[1]
         return (y2-y1)/self.get_length()
 
-    def get_local_matrix2(self):
-        k = np.array([[(self.E*self.A)/self.length, -(self.E*self.A)/self.length],
-                      [-(self.E*self.A)/self.length, (self.E*self.A)/self.length]])
-        t = np.array([[self.c, self.s, 0, 0],
-                      [0, 0, self.c, self.s]])
-        tt = t.transpose()
-        a = np.dot(tt, k)
-        return np.dot(a, t)
-
     def get_local_matrix(self):
         k = np.array([
                       [(self.E*self.A)/self.length, 0, 0, -(self.E*self.A)/self.length, 0, 0],
@@ -118,10 +96,9 @@ class Truss:
     def __repr__(self):
         return f"\nstart:{self.start}, end:{self.end} matrix:\n{self.matrix}" 
 
-#for node in nodes:
 def main():
     trusses = []
-    with open("example1.txt") as f:
+    with open("example2.txt") as f:
         for line in f:
             line = line.rstrip()
             if re.search(r"^ ", line):
