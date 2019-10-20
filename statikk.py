@@ -54,7 +54,6 @@ class Beam:
         self.s = self.get_s()
         self.matrix = self.get_local_matrix()
 
-
     def get_length(self):
         x1 = self.start[0]
         x2 = self.end[0]
@@ -83,13 +82,14 @@ class Beam:
                       [0, -(12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2, 0, (12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2],
                       [0, (6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length]
                       ])
-        print(k)
-        t = np.array([[self.c, self.s, 0, 0, 0, 0],
+        t = np.array([
+                      [self.c, self.s, 0, 0, 0, 0],
                       [-self.s, self.c, 0, 0, 0, 0],
                       [0, 0, 1, 0, 0, 0],
                       [0, 0, 0, self.c, self.s, 0],
                       [0, 0, 0, -self.s, self.c, 0],
-                      [0, 0, 0, 0, 0, 1]])
+                      [0, 0, 0, 0, 0, 1]
+                      ])
         tt = t.transpose()
         a = np.dot(tt, k)
         return np.dot(a, t)
@@ -97,12 +97,15 @@ class Beam:
     def __repr__(self):
         return f"\nstart:{self.start}, end:{self.end} matrix:\n{self.matrix}" 
 
+def get_displacements(Keff, force):
+    return np.dot(np.linalg.inv(Keff), force)
+
 def main():
     trusses = []
-    with open("example3.txt") as f:
+    with open("example5.txt") as f:
         for line in f:
             line = line.rstrip()
-            if re.search(r"^ ", line):
+            if re.search(r"^#", line):
                 pass
             elif re.search(r"^Force", line):
                 x = re.split(r"\s", line)
@@ -110,10 +113,13 @@ def main():
                 force =  np.zeros( (len(x)-1,1) )
                 for i in range(len(x)-1):
                     force[i][0] += float(x[i+1])
-                print(x, force)
+                print(f"\nForce vektor:\n{force}")
             else:
                 trusses.append(Beam(line))
-    print(trusses)
+    counter = 1
+    for truss in trusses:
+        print(f"\nElement {counter} matrix:{truss}")
+        counter += 1
     Keff = np.zeros( (us,us) )
     for truss in trusses:
         i = 0
@@ -122,14 +128,12 @@ def main():
                 j = 0
                 for u2 in truss.degrees:
                     if u2 != 0:
-                        Keff[int(u)-1][int(u2)-1] += truss.matrix[i][j]
-                        print(i,j, truss.matrix[i][j], u, u2)
+                        Keff[u-1][u2-1] += truss.matrix[i][j]
                     j += 1
             i += 1
-    print(f"Keff: \n{Keff}")
-    k = np.linalg.inv(Keff)
-    displ = np.dot(k, force)
-    print(f"displacements: \n{displ}") 
+    print(f"\nKeff: \n{Keff}")
+    displ = get_displacements(Keff, force)
+    print(f"\nDisplacements: \n{displ}") 
 
 
 if __name__ == "__main__":
