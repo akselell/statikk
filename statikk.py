@@ -2,9 +2,9 @@ import math
 import re
 import numpy as np
 
-class Truss:
+class Beam:
     """
-    A truss can take loads
+    A beam can take loads
     """
     def __init__(self, line):
         print(repr(line))
@@ -83,6 +83,7 @@ class Truss:
                       [0, -(12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2, 0, (12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2],
                       [0, (6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length]
                       ])
+        print(k)
         t = np.array([[self.c, self.s, 0, 0, 0, 0],
                       [-self.s, self.c, 0, 0, 0, 0],
                       [0, 0, 1, 0, 0, 0],
@@ -98,7 +99,7 @@ class Truss:
 
 def main():
     trusses = []
-    with open("example2.txt") as f:
+    with open("example3.txt") as f:
         for line in f:
             line = line.rstrip()
             if re.search(r"^ ", line):
@@ -108,12 +109,11 @@ def main():
                 us = len(x) - 1
                 force =  np.zeros( (len(x)-1,1) )
                 for i in range(len(x)-1):
-                    force[i][0] += int(x[i+1])
+                    force[i][0] += float(x[i+1])
                 print(x, force)
             else:
-                trusses.append(Truss(line))
+                trusses.append(Beam(line))
     print(trusses)
-
     Keff = np.zeros( (us,us) )
     for truss in trusses:
         i = 0
@@ -126,7 +126,7 @@ def main():
                         print(i,j, truss.matrix[i][j], u, u2)
                     j += 1
             i += 1
-    print(Keff)
+    print(f"Keff: \n{Keff}")
     k = np.linalg.inv(Keff)
     displ = np.dot(k, force)
     print(f"displacements: \n{displ}") 

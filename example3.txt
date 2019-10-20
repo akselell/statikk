@@ -1,0 +1,7 @@
+ start coordinate, end coordinate, E, A, I, u1, u2, u3, u4, u5, u6
+(0, 0), (0, 4), 200e6, 1e-2, 133e-7, 0, 0, 0, 1, 2, 3
+(0, 4), (4, 4), 200e6, 1e-2, 133e-7, 1, 2, 3, 4, 5, 6
+(4, 4), (4, 0), 200e6, 1e-2, 133e-7, 4, 5, 7, 0, 0, 0
+ forces below, write for all u's in order
+Force: 25 -35 -85 0 -35 0 0
+ d
