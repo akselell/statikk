@@ -95,7 +95,7 @@ class Beam:
         return np.dot(a, t)
 
     def __repr__(self):
-        return f"\nstart:{self.start}, end:{self.end} matrix:\n{self.matrix}" 
+        return f"\n start:{self.start}, end:{self.end} matrix: \n{np.round(self.matrix)}" 
 
 def get_displacements(Keff, force):
     return np.dot(np.linalg.inv(Keff), force)
@@ -113,12 +113,12 @@ def main():
                 force =  np.zeros( (len(x)-1,1) )
                 for i in range(len(x)-1):
                     force[i][0] += float(x[i+1])
-                print(f"\nForce vektor:\n{force}")
+                print(f"\n Force vektor:\n{force}")
             else:
                 trusses.append(Beam(line))
     counter = 1
     for truss in trusses:
-        print(f"\nElement {counter} matrix:{truss}")
+        print(f"\n Element {counter} matrix:{truss}")
         counter += 1
     Keff = np.zeros( (us,us) )
     for truss in trusses:
@@ -131,9 +131,9 @@ def main():
                         Keff[u-1][u2-1] += truss.matrix[i][j]
                     j += 1
             i += 1
-    print(f"\nKeff: \n{Keff}")
+    print(f"\n Keff: \n{np.round(Keff, 2)}")
     displ = get_displacements(Keff, force)
-    print(f"\nDisplacements: \n{displ}") 
+    print(f"\n Displacements: \n{displ}") 
 
 
 if __name__ == "__main__":
