@@ -9,11 +9,9 @@ class Beam:
     def __init__(self, line):
         print(repr(line))
         match = re.match(
-            r"\((\d+), (\d+)\)"
+            r"\((\d+), (\d+), (\d+)\)"
             r", "
-            r"\(([0-9]+), (\d+)\)"
-            r", "
-            r"(\d+e-?\d+)"
+            r"\((\d+), (\d+), (\d+)\)"
             r", "
             r"(\d+e-?\d+)"
             r", "
@@ -30,12 +28,11 @@ class Beam:
             r"(\d+)"
             r", "
             r"(\d+)", line)
-        start1, start2, end1, end2, E, A, I, u1, u2, u3, u4, u5, u6 = match.groups()
-        start = (float(start1), float(start2))
-        end = (float(end1), float(end2))
+        start1, start2, start3, end1, end2, end3, E, A, u1, u2, u3, u4, u5, u6 = match.groups()
+        start = (float(start1), float(start2), float(start3))
+        end = (float(end1), float(end2), float(end3))
         E = float(E)
         A = float(A)
-        I = float(I)
         u1 = int(u1)
         u2 = int(u2)
         u3 = int(u3)
@@ -47,11 +44,11 @@ class Beam:
         self.end = end
         self.E = E
         self.A = A
-        self.I = I
         self.degrees = [u1, u2, u3, u4, u5, u6]
         self.length = self.get_length()
-        self.c = self.get_c()
-        self.s = self.get_s()
+        self.l = self.get_l()
+        self.m = self.get_m()
+        self.n = self.get_n()
         self.matrix = self.get_local_matrix()
 
     def get_length(self):
@@ -59,40 +56,61 @@ class Beam:
         x2 = self.end[0]
         y1 = self.start[1]
         y2 = self.end[1]
+        z1 = self.start[2]
+        z2 = self.end[2]
         x = x2 - x1
         y = y2 - y1
-        return math.sqrt(x**2 + y**2)
+        z = z2 - z1
+        return math.sqrt(x**2 + y**2 + z**2)
 
-    def get_c(self):
+    def get_l(self):
         x1 = self.start[0]
         x2 = self.end[0]
         return (x2-x1)/self.get_length()
 
-    def get_s(self):    
+    def get_m(self):    
         y1 = self.start[1]
         y2 = self.end[1]
         return (y2-y1)/self.get_length()
+    
+    def get_n(self):    
+        z1 = self.start[2]
+        z2 = self.end[2]
+        return (z2-z1)/self.get_length()
 
     def get_local_matrix(self):
-        k = np.array([
-                      [(self.E*self.A)/self.length, 0, 0, -(self.E*self.A)/self.length, 0, 0],
-                      [0, (12*self.E*self.I)/self.length**3, (6*self.E*self.I)/self.length**2, 0, -(12*self.E*self.I)/self.length**3, (6*self.E*self.I)/self.length**2],
-                      [0, (6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length],
-                      [-(self.E*self.A)/self.length, 0, 0, (self.E*self.A)/self.length, 0, 0],
-                      [0, -(12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2, 0, (12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2],
-                      [0, (6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length]
-                      ])
-        t = np.array([
-                      [self.c, self.s, 0, 0, 0, 0],
-                      [-self.s, self.c, 0, 0, 0, 0],
-                      [0, 0, 1, 0, 0, 0],
-                      [0, 0, 0, self.c, self.s, 0],
-                      [0, 0, 0, -self.s, self.c, 0],
-                      [0, 0, 0, 0, 0, 1]
-                      ])
-        tt = t.transpose()
-        a = np.dot(tt, k)
-        return np.dot(a, t)
+
+        matrix = np.array([
+                     [self.l**2, self.l*self.m, self.l*self.n, -self.l**2, -self.l*self.m, -self.l*self.n],
+                     [self.l*self.m, self.m**2, self.m*self.n, -self.l*self.m, -self.m**2, -self.m*self.n],
+                     [self.l*self.n, self.m*self.n, self.n**2, -self.l*self.n, -self.m*self.n, -self.n**2],
+                     [-self.l**2, -self.l*self.m, -self.l*self.n, self.l**2, self.l*self.m, self.l*self.n],
+                     [-self.l*self.m, -self.m**2, -self.m*self.n, self.l*self.m, self.m**2, self.m*self.n],
+                     [-self.l*self.n, -self.m*self.n, -self.n**2, self.l*self.n, self.m*self.n, self.n**2]
+        ])
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                matrix[i][j] *= (self.E * self.A)/self.length
+        return matrix
+#        k = np.array([
+#                      [(self.E*self.A)/self.length, 0, 0, -(self.E*self.A)/self.length, 0, 0],
+#                      [0, (12*self.E*self.I)/self.length**3, (6*self.E*self.I)/self.length**2, 0, -(12*self.E*self.I)/self.length**3, (6*self.E*self.I)/self.length**2],
+#                      [0, (6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length],
+#                      [-(self.E*self.A)/self.length, 0, 0, (self.E*self.A)/self.length, 0, 0],
+#                      [0, -(12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2, 0, (12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2],
+#                      [0, (6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length]
+#                      ])
+#        t = np.array([
+#                      [self.c, self.s, 0, 0, 0, 0],
+#                      [-self.s, self.c, 0, 0, 0, 0],
+#                      [0, 0, 1, 0, 0, 0],
+#                      [0, 0, 0, self.c, self.s, 0],
+#                      [0, 0, 0, -self.s, self.c, 0],
+#                      [0, 0, 0, 0, 0, 1]
+#                      ])
+#        tt = t.transpose()
+#        a = np.dot(tt, k)
+#        return np.dot(a, t)
 
     def __repr__(self):
         return f"\n start:{self.start}, end:{self.end} matrix: \n{np.round(self.matrix)}" 
@@ -102,7 +120,7 @@ def get_displacements(Keff, force):
 
 def main():
     trusses = []
-    with open("example5.txt") as f:
+    with open("example1.txt") as f:
         for line in f:
             line = line.rstrip()
             if re.search(r"^#", line):
