@@ -1,8 +1,0 @@
-#start coordinate, end coordinate, E, A, I, u1, u2, u3, u4, u5, u6
-(0, 6), (0, 0), 200e6, 2e-3, 0e1, 0, 0, 0, 1, 2, 0
-(0, 0), (8, 6), 200e6, 4e-3, 0e1, 1, 2, 0, 0, 0, 0
-#forces below, write for all u's in order
-Force: -100 173.2
-
-# [ID(start coordinate), COMMA, ID(end coordinate), COMMA, ID(E), COMMA, ... NEWLINE,
-#  LPARAN, NUM(0), COMMA, NUM(6), RPARAN, ... NUM(200e6), COMMA, ... NEWLINE

@@ -92,25 +92,6 @@ class Beam:
             for j in range(len(matrix[i])):
                 matrix[i][j] *= (self.E * self.A)/self.length
         return matrix
-#        k = np.array([
-#                      [(self.E*self.A)/self.length, 0, 0, -(self.E*self.A)/self.length, 0, 0],
-#                      [0, (12*self.E*self.I)/self.length**3, (6*self.E*self.I)/self.length**2, 0, -(12*self.E*self.I)/self.length**3, (6*self.E*self.I)/self.length**2],
-#                      [0, (6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length],
-#                      [-(self.E*self.A)/self.length, 0, 0, (self.E*self.A)/self.length, 0, 0],
-#                      [0, -(12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2, 0, (12*self.E*self.I)/self.length**3, -(6*self.E*self.I)/self.length**2],
-#                      [0, (6*self.E*self.I)/self.length**2, (2*self.E*self.I)/self.length, 0, -(6*self.E*self.I)/self.length**2, (4*self.E*self.I)/self.length]
-#                      ])
-#        t = np.array([
-#                      [self.c, self.s, 0, 0, 0, 0],
-#                      [-self.s, self.c, 0, 0, 0, 0],
-#                      [0, 0, 1, 0, 0, 0],
-#                      [0, 0, 0, self.c, self.s, 0],
-#                      [0, 0, 0, -self.s, self.c, 0],
-#                      [0, 0, 0, 0, 0, 1]
-#                      ])
-#        tt = t.transpose()
-#        a = np.dot(tt, k)
-#        return np.dot(a, t)
 
     def __repr__(self):
         return f"\n start:{self.start}, end:{self.end} matrix: \n{np.round(self.matrix)}" 
