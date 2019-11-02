@@ -6,40 +6,7 @@ class Beam:
     """
     A beam can take loads
     """
-    def __init__(self, line):
-        print(repr(line))
-        match = re.match(
-            r"\((\d+), (\d+), (\d+)\)"
-            r", "
-            r"\((\d+), (\d+), (\d+)\)"
-            r", "
-            r"(\d+e-?\d+)"
-            r", "
-            r"(\d+e-?\d+)"
-            r", "
-            r"(\d+)"
-            r", "
-            r"(\d+)"
-            r", "
-            r"(\d+)"
-            r", "
-            r"(\d+)"
-            r", "
-            r"(\d+)"
-            r", "
-            r"(\d+)", line)
-        start1, start2, start3, end1, end2, end3, E, A, u1, u2, u3, u4, u5, u6 = match.groups()
-        start = (float(start1), float(start2), float(start3))
-        end = (float(end1), float(end2), float(end3))
-        E = float(E)
-        A = float(A)
-        u1 = int(u1)
-        u2 = int(u2)
-        u3 = int(u3)
-        u4 = int(u4)
-        u5 = int(u5)
-        u6 = int(u6)
-
+    def __init__(self, start, end, E, A, u1, u2, u3, u4, u5, u6):
         self.start = start
         self.end = end
         self.E = E
@@ -99,6 +66,42 @@ class Beam:
 def get_displacements(Keff, force):
     return np.dot(np.linalg.inv(Keff), force)
 
+def get_elements(line):
+    print(repr(line))
+    match = re.match(
+        r"\((\d+), (\d+), (\d+)\)"
+        r", "
+        r"\((\d+), (\d+), (\d+)\)"
+        r", "
+        r"(\d+e-?\d+)"
+        r", "
+        r"(\d+e-?\d+)"
+        r", "
+        r"(\d+)"
+        r", "
+        r"(\d+)"
+        r", "
+        r"(\d+)"
+        r", "
+        r"(\d+)"
+        r", "
+        r"(\d+)"
+        r", "
+        r"(\d+)", line)
+    start1, start2, start3, end1, end2, end3, E, A, u1, u2, u3, u4, u5, u6 = match.groups()
+    start = (float(start1), float(start2), float(start3))
+    end = (float(end1), float(end2), float(end3))
+    E = float(E)
+    A = float(A)
+    u1 = int(u1)
+    u2 = int(u2)
+    u3 = int(u3)
+    u4 = int(u4)
+    u5 = int(u5)
+    u6 = int(u6)
+    return start, end, E, A, u1, u2, u3, u4, u5, u6
+
+
 def main():
     trusses = []
     with open("example1.txt") as f:
@@ -114,7 +117,8 @@ def main():
                     force[i][0] += float(x[i+1])
                 print(f"\n Force vektor:\n{force}")
             else:
-                trusses.append(Beam(line))
+                start, end, E, A, u1, u2, u3, u4, u5, u6 = get_elements(line)
+                trusses.append(Beam(start, end, E, A, u1, u2, u3, u4, u5, u6))
     counter = 1
     for truss in trusses:
         print(f"\n Element {counter} matrix:{truss}")
