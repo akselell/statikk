@@ -95,14 +95,14 @@ class Beam:
         return np.dot(a, t)
 
     def __repr__(self):
-        return f"\n start:{self.start}, end:{self.end} matrix: \n{np.round(self.matrix)}" 
+        return f"\n start:{self.start}, end:{self.end} matrix: \n{np.round(self.matrix)}"
 
 def get_displacements(Keff, force):
     return np.dot(np.linalg.inv(Keff), force)
 
 def main():
     trusses = []
-    with open("example5.txt") as f:
+    with open("bjelke.txt") as f:
         for line in f:
             line = line.rstrip()
             if re.search(r"^#", line):
