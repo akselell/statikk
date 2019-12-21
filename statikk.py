@@ -1,6 +1,9 @@
 import math
 import re
 import numpy as np
+import time
+
+starttime = time.time()
 
 class Beam:
     """
@@ -104,7 +107,7 @@ def get_elements(line):
 
 def main():
     trusses = []
-    with open("bjelke.txt") as f:
+    with open("truss_bridge2.txt") as f:
         for line in f:
             line = line.rstrip()
             if re.search(r"^#", line):
@@ -136,8 +139,9 @@ def main():
             i += 1
     print(f"\n Keff: \n{np.round(Keff, 2)}")
     displ = get_displacements(Keff, force)
-    print(f"\n Displacements: \n{displ}") 
-
+    print(f"\n Displacements: \n{displ}")
+    endtime = time.time()
+    print(endtime - starttime)
 
 if __name__ == "__main__":
     main()
