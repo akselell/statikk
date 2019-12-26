@@ -2,6 +2,7 @@ import math
 import re
 import numpy as np
 import time
+import sys
 
 starttime = time.time()
 
@@ -62,7 +63,7 @@ class Beam:
         return np.dot(a, t)
 
     def __repr__(self):
-        return f"\n start:{self.start}, end:{self.end} matrix: \n{np.round(self.matrix)}"
+        return f"\n start:{self.start}, end:{self.end} matrix: \n {np.round(self.matrix)}"
 
 def get_displacements(Keff, force):
     return np.dot(np.linalg.inv(Keff), force)
@@ -105,9 +106,25 @@ def get_elements(line):
     u6 = int(u6)
     return start, end, E, A, I, u1, u2, u3, u4, u5, u6
 
+def calculate_element_forces(trusses, displ):
+    y = 1
+    for truss in trusses:
+        displa =  np.zeros( (6,1) )
+        i = 0
+        for u in truss.degrees:
+            if u != 0:
+                displa[i][0] += displ[u-1][0]
+            i += 1
+#        print("\n", displa, "gg")
+        force = np.dot(truss.matrix, displa)
+        print("\n ", y, "\n", force)
+        y += 1    
+#        return force
+
+
 def main():
     trusses = []
-    with open("truss_bridge2.txt") as f:
+    with open(sys.argv[1]) as f:
         for line in f:
             line = line.rstrip()
             if re.search(r"^#", line):
@@ -115,8 +132,8 @@ def main():
             elif re.search(r"^Force", line):
                 x = re.split(r"\s", line)
                 us = len(x) - 1
-                force =  np.zeros( (len(x)-1,1) )
-                for i in range(len(x)-1):
+                force =  np.zeros( (us,1) )
+                for i in range(us):
                     force[i][0] += float(x[i+1])
                 print(f"\n Force vektor:\n{force}")
             else:
@@ -140,8 +157,8 @@ def main():
     print(f"\n Keff: \n{np.round(Keff, 2)}")
     displ = get_displacements(Keff, force)
     print(f"\n Displacements: \n{displ}")
-    endtime = time.time()
-    print(endtime - starttime)
+    print(f"\n {round(time.time() - starttime, 4)} sec to complite")
+    print(calculate_element_forces(trusses, displ))
 
 if __name__ == "__main__":
     main()
