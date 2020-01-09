@@ -4,7 +4,6 @@ import numpy as np
 import time
 import sys
 
-starttime = time.time()
 
 class Beam:
     """
@@ -123,6 +122,7 @@ def calculate_element_forces(trusses, displ):
 
 
 def main():
+    starttime = time.time()
     trusses = []
     with open(sys.argv[1]) as f:
         for line in f:
@@ -157,7 +157,7 @@ def main():
     print(f"\n Keff: \n{np.round(Keff, 2)}")
     displ = get_displacements(Keff, force)
     print(f"\n Displacements: \n{displ}")
-    print(f"\n {round(time.time() - starttime, 4)} sec to complite")
+    print(f"\n {round(time.time() - starttime, 4)} sec to complete")
     print(calculate_element_forces(trusses, displ))
 
 if __name__ == "__main__":
