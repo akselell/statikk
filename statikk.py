@@ -62,7 +62,7 @@ class Beam:
         return np.dot(a, t)
 
     def __repr__(self):
-        return f"\n start:{self.start}, end:{self.end} matrix: \n {np.round(self.matrix)}"
+        return f"\n start:{self.start}, end:{self.end}, dof:{self.degrees} matrix: \n {np.round(self.matrix)}"
 
 def get_displacements(Keff, force):
     return np.dot(np.linalg.inv(Keff), force)
